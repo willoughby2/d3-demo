@@ -1,6 +1,4 @@
-window.onload = setMap();
-
-function setMap(){
+function setMap() {
     
     var width = 960,
         height = 460;
@@ -12,10 +10,9 @@ function setMap(){
         .attr("height", height);
     
     var projection = d3.geoAlbers()
-        .center([-120,47])
-        .rotate([0,0,0])
-        .parallels([40,60])
-        .scale(2500)
+        .center([-24, 47.3])
+        .parallels ([-45, 46])
+        .scale(6500)
         .translate([width / 2, height / 2]);
     
     var path = d3.geoPath()
@@ -27,11 +24,37 @@ function setMap(){
         .await(callback);
     
     function callback (error, csvData, washington) {
+
         var washingtonCounties = topojson.feature(washington, washington.objects.washington).features;
         
         var counties = map.selectAll("counties")
-            .datum(washingtonCounties)
-            .attr("class", "counties")
+            .data(washingtonCounties)
+            .enter()
+            .append("path")
+            .attr("class", function(d){
+                return "counties" + d.properties.countyfp;
+            })
             .attr("d", path);
-    };
+        
+        var attrArray = ["obesitynum2004", "obesityper2004", "obesitynum2013", "obesityper2013", "diabetesnum2004", "diabetesper2004", "diabetesnum2013", "diabetesper2013", "inactivitynum2004", "inactivityper2004", "inactivitynum2013", "inactivityper2013"]
+        
+        for (var i=0; i<csvData.length; i++){
+            var csvCounties = csvData[i];
+            var csvKey = csvCounties.countyfp;
+        
+            for (var a=0; a<washingtonCounties.length; a++){
+                var geojsonProps = washingtonCounties[a].properties;
+                var geojsonKey = geojsonProps.countyfp;
+            
+                if (geojsonKey == csvKey){
+                    attrArray.forEach(function(attr){
+                        var val = parseFloat(csvCounties[attr]);
+                        geojsonProps[attr] = val;
+                    })
+                }
+            }
+        }
+    }
 }
+
+window.onload = setMap();
