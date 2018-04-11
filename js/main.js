@@ -30,11 +30,8 @@ function setMap(){
         var washingtonCounties = topojson.feature(washington, washington.objects.washington).features;
         
         var counties = map.selectAll("counties")
-            .data(washingtonCounties)
-            .enter()
-            .attr("class", function(d){
-                return "counties " + d.properties.countyfp;
-            })
+            .datum(washingtonCounties)
+            .attr("class", "counties")
             .attr("d", path);
     };
 }
