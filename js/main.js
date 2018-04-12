@@ -1,7 +1,7 @@
 (function(){
     
     var attrArray = ["obesitynum2004", "obesityper2004", "obesitynum2013", "obesityper2013", "diabetesnum2004", "diabetesper2004", "diabetesnum2013", "diabetesper2013", "inactivitynum2004", "inactivityper2004", "inactivitynum2013", "inactivityper2013"];
-    var expressed = attrArray[0];
+    var expressed = attrArray[3];
     
     function setMap() {
     
@@ -29,21 +29,14 @@
             .await(callback);
     
         function callback (error, csvData, washington) {
-
+            
             var washingtonCounties = topojson.feature(washington,   washington.objects.washington).features;
         
-            var counties = map.selectAll("counties")
-                .data(washingtonCounties)
-                .enter()
-                .append("path")
-                .attr("class", function(d){
-                    return "counties" + d.properties.countyfp;
-                })
-                .attr("d", path);
-        
             washingtonCounties = joinData(washingtonCounties, csvData);
+            
+            var colorScale = makeColorScale(csvData);
         
-            setEnumerationUnits(washingtonCounties, map, path);
+            setEnumerationUnits(washingtonCounties, map, path, colorScale);
         }
     }
 
@@ -52,6 +45,8 @@
         for (var i=0; i<csvData.length; i++){
             var csvCounties = csvData[i];
             var csvKey = csvCounties.countyfp;
+            console.log(csvCounties);
+            console.log(csvKey);
         
             for (var a=0; a<washingtonCounties.length; a++){
                 var geojsonProps = washingtonCounties[a].properties;
@@ -67,6 +62,54 @@
         }
         
         return washingtonCounties;
+    }
+    
+    function setEnumerationUnits(washingtonCounties, map, path, colorScale){
+        
+        var counties = map.selectAll("counties")
+            .data(washingtonCounties)
+            .enter()
+            .append("path")
+            .attr("class", function(d){
+                return "counties" + d.properties.countyfp;
+            })
+            .attr("d", path)
+            .style("fill", function(d){
+                return colorScale(d.properties[expressed]);
+            });
+
+    }
+    
+    function makeColorScale(data){
+        var colorClasses = [
+            "#D4B9DA",
+            "#C994C7",
+            "#DF65B0",
+            "#DD1C77",
+            "#980043"
+        ];
+        
+        var colorScale = d3.scaleThreshold()
+            .range(colorClasses);
+        
+        var domainArray = [];
+        for (var i=0; i<data.length; i++){
+            var val = parseFloat(data[i][expressed]);
+            domainArray.push(val);
+        };
+        
+        var clusters = ss.ckmeans(domainArray, 5);
+        
+        domainArray = clusters.map(function(d){
+            return d3.min(d);
+        })
+        
+        domainArray.shift();
+        
+        colorScale.domain(domainArray);
+        
+        return colorScale;
+        
     }
 
 window.onload = setMap();
