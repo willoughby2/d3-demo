@@ -39,6 +39,8 @@
             setEnumerationUnits(washingtonCounties, map, path, colorScale);
             
             setChart(csvData, colorScale);
+            
+            createDropdown(csvData);
         }
     }
 
@@ -165,6 +167,41 @@
             .style("fill", function(d){
                 return choropleth(d, colorScale);
             })
+    }
+    
+    function createDropdown(csvData){
+
+        var dropdown = d3.select("body")
+            .append("select")
+            .attr("class", "dropdown")
+            .on("change", function(){
+                changeAttribute(this.value, csvData)
+            });
+
+
+        var titleOption = dropdown.append("option")
+            .attr("class", "titleOption")
+            .attr("disabled", "true")
+            .text("Select Attribute");
+
+
+        var attrOptions = dropdown.selectAll("attrOptions")
+            .data(attrArray)
+            .enter()
+            .append("option")
+            .attr("value", function(d){ return d })
+            .text(function(d){ return d });
+    }
+    
+    function changeAttribute(attribute, csvData){
+        expressed = attribute;
+        
+        var colorScale = makeColorScale(csvData);
+        
+        var counties = d3.selectAll(".counties")
+            .style("fill", function(d){
+                return choropleth(d.properties, colorScale)
+            });
     }
     
 
