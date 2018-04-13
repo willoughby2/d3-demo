@@ -1,4 +1,4 @@
-(function(){
+(function() {
     
     var attrArray = ["obesitynum2004", "obesityper2004", "obesitynum2013", "obesityper2013", "diabetesnum2004", "diabetesper2004", "diabetesnum2013", "diabetesper2013", "inactivitynum2004", "inactivityper2004", "inactivitynum2013", "inactivityper2013"];
     var expressed = attrArray[1];
@@ -16,7 +16,7 @@
     
         var projection = d3.geoAlbers()
             .center([-24, 47.3])
-            .parallels ([-47, 47.5])
+            .parallels([-47, 47.5])
             .scale(6500)
             .translate([width / 2, height / 2]);
     
@@ -44,7 +44,7 @@
         }
     }
 
-    function joinData(washingtonCounties, csvData){
+    function joinData(washingtonCounties, csvData) {
 
         for (var i=0; i<csvData.length; i++){
             var csvCounties = csvData[i];
@@ -203,7 +203,8 @@
         var counties = d3.selectAll(".counties")
             .style("fill", function(d){
                 return choropleth(d.properties, colorScale)
-            });
+            })
+            .attr("fake", function(d){ console.log(yes)});
     }
     
 
