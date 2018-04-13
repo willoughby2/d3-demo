@@ -45,8 +45,6 @@
         for (var i=0; i<csvData.length; i++){
             var csvCounties = csvData[i];
             var csvKey = csvCounties.countyfp;
-            console.log(csvCounties);
-            console.log(csvKey);
         
             for (var a=0; a<washingtonCounties.length; a++){
                 var geojsonProps = washingtonCounties[a].properties;
@@ -66,7 +64,7 @@
     
     function setEnumerationUnits(washingtonCounties, map, path, colorScale){
         
-        var counties = map.selectAll("counties")
+        var counties = map.selectAll(".counties")
             .data(washingtonCounties)
             .enter()
             .append("path")
@@ -76,6 +74,9 @@
             .attr("d", path)
             .style("fill", function(d){
                 return colorScale(d.properties[expressed]);
+            })
+            .style("fill", function(d){
+                return choropleth(d.properties, colorScale)
             });
 
     }
@@ -110,6 +111,17 @@
         
         return colorScale;
         
+    }
+    
+    function choropleth(props, colorScale){
+        var val = parseFloat(props[expressed]);
+        
+        if (typeof val == 'number' && !isNaN(val)){
+            return colorScale(val);
+        }
+        else {
+            return "#CCC";
+        }
     }
 
 window.onload = setMap();
