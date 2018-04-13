@@ -195,6 +195,8 @@
     
     function changeAttribute(attribute, csvData){
         expressed = attribute;
+        console.log(attribute);
+        console.log(expressed);
         
         var colorScale = makeColorScale(csvData);
         
