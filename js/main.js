@@ -1,11 +1,11 @@
 (function(){
     
     var attrArray = ["obesitynum2004", "obesityper2004", "obesitynum2013", "obesityper2013", "diabetesnum2004", "diabetesper2004", "diabetesnum2013", "diabetesper2013", "inactivitynum2004", "inactivityper2004", "inactivitynum2013", "inactivityper2013"];
-    var expressed = attrArray[3];
+    var expressed = attrArray[1];
     
     function setMap() {
     
-        var width = 960,
+        var width = window.innerWidth * 0.5,
             height = 460;
     
         var map = d3.select("body")
@@ -37,6 +37,8 @@
             var colorScale = makeColorScale(csvData);
         
             setEnumerationUnits(washingtonCounties, map, path, colorScale);
+            
+            setChart(csvData, colorScale);
         }
     }
 
@@ -77,7 +79,9 @@
             })
             .style("fill", function(d){
                 return choropleth(d.properties, colorScale)
-            });
+            })
+            .attr("stroke-width", 0.5)
+            .style("stroke", "#000");
 
     }
     
@@ -123,6 +127,46 @@
             return "#CCC";
         }
     }
+    
+    function setChart(csvData, colorScale){
+        var chartWidth = window.innerWidth * 0.425,
+            chartHeight = 460;
+        
+        var chart = d3.select("body")
+            .append("svg")
+            .attr("width", chartWidth)
+            .attr("height", chartHeight)
+            .attr("class", "chart");
+        
+        var yScale = d3.scaleLinear()
+            .range([0, chartHeight])
+            .domain([0, 150]);
+        
+        var bars = chart.selectAll(".bars")
+            .data(csvData)
+            .enter()
+            .append("rect")
+            .sort(function(a,b){
+                return a[expressed]-b[expressed];
+            })
+            .attr("class", function(d){
+                return "bars " + d.countyfp;
+            })
+            .attr("width", chartWidth / csvData.length - 1)
+            .attr("x", function(d, i){
+                return i * (chartWidth / csvData.length);
+            })
+            .attr("height", function(d){
+                return yScale(parseFloat(d[expressed]));
+            })
+            .attr("y", function(d){
+                return chartHeight - yScale(parseFloat(d[expressed]));
+            })
+            .style("fill", function(d){
+                return choropleth(d, colorScale);
+            })
+    }
+    
 
 window.onload = setMap();
     

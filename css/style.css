@@ -9,8 +9,15 @@
     border: medium solid #999;
 }
 
-.counties{
-    stroke: #000;
+.chart {
+    background-color: antiquewhite;
+    border: medium solid #999;
+    float: right;
+    margin: 10px 20px 0 0;
+}
+
+.counties {
+    stroke: black;
     stroke-width: 0.5px;
     stroke-linecap: round;
 }
