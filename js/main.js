@@ -151,13 +151,6 @@
             .range([0, chartWidth])
             .domain([0, 40]);
         
-        var chartText = chart.append("chartText")
-            .attr("width", 50)
-            .attr("height", 50)
-            .append("xhtml:div")
-            .style("font", "14px 'Helvetica Neue'")
-            .html("Percentage of " + expressed.slice(0, -7).toUpperCase() + " in each County in " + expressed.slice(-4))
-        
         var bars = chart.selectAll(".bars")
             .data(csvData)
             .enter()
@@ -170,7 +163,7 @@
             })
             .attr("height", chartHeight/ csvData.length - 1)
             .attr("y", function(d, i){
-                return i * (chartHeight / csvData.length) + topPadding;
+                return i * (chartHeight / csvData.length) - topPadding;
             })
             .attr("width", function(d){
                 xScale(parseFloat(d[expressed]));
@@ -185,7 +178,7 @@
             .attr("x", 0)
             .attr("y", 25)
             .attr("class", "chartTitle")
-            .text("Percentage of " + expressed.slice(0, -7).toUpperCase() + " in each County in " + expressed.slice(-4));
+            .text("Percentage of " + expressed.slice(0, -7).toUpperCase() + " by County in " + expressed.slice(-4));
         
         updateChart(bars, csvData.length, colorScale);
 
@@ -249,7 +242,7 @@
             });
         
         var chartTitle = d3.select(".chartTitle")
-            .text("Percentage of " + expressed.slice(0, -7).toUpperCase() + " in each County in " + expressed.slice(-4));
+            .text("Percentage of " + expressed.slice(0, -7).toUpperCase() + " by County in " + expressed.slice(-4));
     }
     
 })();
