@@ -4,6 +4,9 @@
     var numArray = ["obesitynum2004", "obesitynum2013", "diabetesnum2004", "diabetesnum2013", "inactivitynum2004", "inactivitynum2013"];
     var expressed = attrArray[0];
     
+    var chartWidth = window.innerWidth * 0.3,
+        chartHeight = 460;
+    
     var xScale = d3.scaleLinear()
             .range([0, chartWidth])
             .domain([0, 40]);
@@ -218,12 +221,11 @@
             .sort(function(a, b){
                 return a[expressed] - b[expressed];
             })
-            .attr("height", chartHeight/ csvData.length - 1)
             .attr("y", function(d, i){
                 return i * (chartHeight / csvData.length);
             })
             .attr("width", function(d){
-                xScale(parseFloat(d[expressed]));
+                return xScale(parseFloat(d[expressed]));
             })
             .attr("x", 0)
             .style("fill", function(d){
@@ -234,8 +236,15 @@
     }
     
     function updateChart(bars, n, colorScale){
-        bars.attr
-        
+        bars.attr("y", function(d, i){
+            return i * (chartHeight / n);
+            })
+            .attr("width", function (d, i){
+                return xScale(parseFloat(d[expressed]));
+            })
+            .attr("x", function(d, i){
+                return xScale(parseFloat(d[expressed]));
+            })
             .style("fill", function(d, i){
                 return choropleth(d, colorScale);
             });
