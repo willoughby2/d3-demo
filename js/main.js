@@ -150,6 +150,13 @@
             .range([0, chartWidth])
             .domain([0, 40]);
         
+        var chartText = chart.append("chartText")
+            .attr("width", 50)
+            .attr("height", 50)
+            .append("xhtml:div")
+            .style("font", "14px 'Helvetica Neue'")
+            .html("Percentage of " + expressed.slice(0, -7).toUpperCase() + " in each County in " + expressed.slice(-4))
+        
         var bars = chart.selectAll(".bars")
             .data(csvData)
             .enter()
@@ -243,7 +250,7 @@
                 return xScale(parseFloat(d[expressed]));
             })
             .attr("x", function(d, i){
-                return xScale(parseFloat(d[expressed]));
+                return 400 -xScale(parseFloat(d[expressed]));
             })
             .style("fill", function(d, i){
                 return choropleth(d, colorScale);
