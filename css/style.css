@@ -9,13 +9,14 @@
     stroke: black;
     stroke-width: 0.5px;
     stroke-linecap: round;
+    margin: 10px 0 0 0;
 }
 
 .chart {
     background-color: white;
     border: none;
     float: right;
-    margin: 20px 20px 0 0;
+    margin: 10px 10px 0 0;
     align-items: center;
 }
 

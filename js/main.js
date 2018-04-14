@@ -5,7 +5,8 @@
     var expressed = attrArray[0];
     
     var chartWidth = window.innerWidth * 0.3,
-        chartHeight = 460;
+        chartHeight = 460,
+        topPadding = 35;
     
     var xScale = d3.scaleLinear()
             .range([0, chartWidth])
@@ -16,7 +17,7 @@
     function setMap() {
     
         var width = window.innerWidth * .65,
-            height = 460;
+            height = 500;
     
         var map = d3.select("body")
             .append("svg")
@@ -143,7 +144,7 @@
         var chart = d3.select("body")
             .append("svg")
             .attr("width", chartWidth)
-            .attr("height", chartHeight)
+            .attr("height", 500)
             .attr("class", "chart");
         
         var xScale = d3.scaleLinear()
@@ -169,7 +170,7 @@
             })
             .attr("height", chartHeight/ csvData.length - 1)
             .attr("y", function(d, i){
-                return i * (chartHeight / csvData.length);
+                return i * (chartHeight / csvData.length) + topPadding;
             })
             .attr("width", function(d){
                 xScale(parseFloat(d[expressed]));
@@ -181,8 +182,8 @@
             
         
         var chartTitle = chart.append("text")
-            .attr("x", 20)
-            .attr("y", 40)
+            .attr("x", 0)
+            .attr("y", 25)
             .attr("class", "chartTitle")
             .text("Percentage of " + expressed.slice(0, -7).toUpperCase() + " in each County in " + expressed.slice(-4));
         
@@ -226,7 +227,7 @@
         
         var bars = d3.selectAll(".bars")
             .sort(function(a, b){
-                return a[expressed] - b[expressed];
+                return b[expressed] - a[expressed];
             })
             .style("fill", function(d){
                 return choropleth(d, colorScale);
@@ -237,7 +238,7 @@
     
     function updateChart(bars, n, colorScale){
         bars.attr("y", function(d, i){
-            return i * (chartHeight / n);
+            return i * (chartHeight / n) + topPadding;
             })
             .attr("width", function (d, i){
                 return xScale(parseFloat(d[expressed]));
