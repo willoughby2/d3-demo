@@ -228,13 +228,6 @@
             .sort(function(a, b){
                 return a[expressed] - b[expressed];
             })
-            .attr("y", function(d, i){
-                return i * (chartHeight / csvData.length);
-            })
-            .attr("width", function(d){
-                return xScale(parseFloat(d[expressed]));
-            })
-            .attr("x", 0)
             .style("fill", function(d){
                 return choropleth(d, colorScale);
             });
@@ -249,9 +242,7 @@
             .attr("width", function (d, i){
                 return xScale(parseFloat(d[expressed]));
             })
-            .attr("x", function(d, i){
-                return 400 -xScale(parseFloat(d[expressed]));
-            })
+            .attr("x", 0)
             .style("fill", function(d, i){
                 return choropleth(d, colorScale);
             });
