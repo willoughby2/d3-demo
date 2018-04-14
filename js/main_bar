@@ -1,19 +1,27 @@
 (function() {
     
     var attrArray = ["obesityper2004", "obesityper2013", "diabetesper2004", "diabetesper2013", "inactivityper2004", "inactivityper2013"];
-    var numArray = ["obesitynum2004", "obesitynum2013", "diabetesnum2004", "diabetesnum2013", "inactivitynum2004", "inactivitynum2013"];
-    var expressed = attrArray[0];
+    var expressed = attrArray[1];
     
-    var xScale = d3.scaleLinear()
-            .range([0, chartWidth])
-            .domain([0, 40]);
+    var chartWidth = window.innerWidth * 0.35,
+        chartHeight = 400,
+        leftPadding = 25,
+        rightPadding = 2,
+        topBottomPadding = 5,
+        chartInnerWidth = chartWidth - leftPadding - rightPadding,
+        chartInnerHeight = chartHeight - topBottomPadding * 2,
+        translate = "translate(" + leftPadding + "," + topBottomPadding + ")";
+    
+    var yScale = d3.scaleLinear()
+        .range([463, 0])
+        .domain([0, 110]);
     
     window.onload = setMap();
     
     function setMap() {
     
-        var width = window.innerWidth * .65,
-            height = 460;
+        var width = window.innerWidth * .60,
+            height = 400;
     
         var map = d3.select("body")
             .append("svg")
@@ -123,6 +131,7 @@
     }
     
     function choropleth(props, colorScale){
+        console.log(expressed);
         var val = parseFloat(props[expressed]);
         
         if (typeof val == 'number' && !isNaN(val)){
@@ -134,8 +143,8 @@
     }
     
     function setChart(csvData, colorScale){
-        var chartWidth = window.innerWidth * 0.3,
-            chartHeight = 460;
+        var chartWidth = window.innerWidth * 0.35,
+            chartHeight = 400;
         
         var chart = d3.select("body")
             .append("svg")
@@ -143,9 +152,9 @@
             .attr("height", chartHeight)
             .attr("class", "chart");
         
-        var xScale = d3.scaleLinear()
-            .range([0, chartWidth])
-            .domain([0, 40]);
+        var yScale = d3.scaleLinear()
+            .range([0, chartHeight])
+            .domain([0, 150]);
         
         var bars = chart.selectAll(".bars")
             .data(csvData)
@@ -157,18 +166,7 @@
             .attr("class", function(d){
                 return "bars " + d.countyfp;
             })
-            .attr("height", chartHeight/ csvData.length - 1)
-            .attr("y", function(d, i){
-                return i * (chartHeight / csvData.length);
-            })
-            .attr("width", function(d){
-                xScale(parseFloat(d[expressed]));
-            })
-            .attr("x", 0)
-            .style("fill", function(d){
-                return choropleth(d, colorScale);
-            });
-            
+            .attr("width", chartWidth / csvData.length - 1);
         
         var chartTitle = chart.append("text")
             .attr("x", 20)
@@ -215,27 +213,38 @@
             });
         
         var bars = d3.selectAll(".bars")
-            .sort(function(a, b){
+            .sort(function(a,b){
                 return a[expressed] - b[expressed];
             })
-            .attr("height", chartHeight/ csvData.length - 1)
+            .attr("x", function(d, i){
+                return i * (chartInnerWidth / csvData.length) + leftPadding;
+            })
+            .attr("height", function(d, i){
+                return 463 - yScale(parseFloat(d[expressed]));   
+            })
             .attr("y", function(d, i){
-                return i * (chartHeight / csvData.length);
+                return yScale(parseFloat(d[expressed])) + topBottomPadding;
             })
-            .attr("width", function(d){
-                xScale(parseFloat(d[expressed]));
-            })
-            .attr("x", 0)
             .style("fill", function(d){
                 return choropleth(d, colorScale);
+            })
+            .sort(function(a, b){
+                return a[expressed] - b[expressed];
             });
         
         updateChart(bars, csvData.length, colorScale)
     }
     
     function updateChart(bars, n, colorScale){
-        bars.attr
-        
+        bars.attr("x", function(d, i){
+            return i * (chartInnerWidth / n) + leftPadding;
+            })
+            .attr("height", function(d, i){
+                return 463 - yScale(parseFloat(d[expressed]));
+            })
+            .attr("y", function(d, i){
+                return yScale(parseFloat(d[expressed])) + topBottomPadding;
+            })
             .style("fill", function(d, i){
                 return choropleth(d, colorScale);
             });
