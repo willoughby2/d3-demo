@@ -7,6 +7,9 @@
 
 .map{
     border: medium solid #999;
+    stroke: black;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
 }
 
 .chart {
@@ -16,7 +19,7 @@
     margin: 10px 20px 0 0;
 }
 
-.counties {
+counties {
     stroke: black;
     stroke-width: 0.5px;
     stroke-linecap: round;

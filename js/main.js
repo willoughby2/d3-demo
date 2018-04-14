@@ -3,6 +3,21 @@
     var attrArray = ["obesitynum2004", "obesityper2004", "obesitynum2013", "obesityper2013", "diabetesnum2004", "diabetesper2004", "diabetesnum2013", "diabetesper2013", "inactivitynum2004", "inactivityper2004", "inactivitynum2013", "inactivityper2013"];
     var expressed = attrArray[1];
     
+    var chartWidth = window.innerWidth * 0.425,
+        chartHeight = 473,
+        leftPadding = 25,
+        rightPadding = 2,
+        topBottomPadding = 5,
+        chartInnerWidth = chartWidth - leftPadding - rightPadding,
+        chartInnerHeight = chartHeight - topBottomPadding * 2,
+        translate = "translate(" + leftPadding + "," + topBottomPadding + ")";
+    
+    var yScale = d3.scaleLinear()
+        .range([463, 0])
+        .domain([0, 110]);
+    
+    window.onload = setMap();
+    
     function setMap() {
     
         var width = window.innerWidth * 0.5,
@@ -77,13 +92,8 @@
             })
             .attr("d", path)
             .style("fill", function(d){
-                return colorScale(d.properties[expressed]);
-            })
-            .style("fill", function(d){
                 return choropleth(d.properties, colorScale)
-            })
-            .attr("stroke-width", 0.5)
-            .style("stroke", "#000");
+            });
 
     }
     
@@ -154,19 +164,10 @@
             .attr("class", function(d){
                 return "bars " + d.countyfp;
             })
-            .attr("width", chartWidth / csvData.length - 1)
-            .attr("x", function(d, i){
-                return i * (chartWidth / csvData.length);
-            })
-            .attr("height", function(d){
-                return yScale(parseFloat(d[expressed]));
-            })
-            .attr("y", function(d){
-                return chartHeight - yScale(parseFloat(d[expressed]));
-            })
-            .style("fill", function(d){
-                return choropleth(d, colorScale);
-            })
+            .attr("width", chartWidth / csvData.length - 1);
+        
+        updateChart(bars, csvData.length, colorScale);
+
     }
     
     function createDropdown(csvData){
@@ -195,19 +196,53 @@
     
     function changeAttribute(attribute, csvData){
         expressed = attribute;
-        console.log(attribute);
-        console.log(expressed);
         
         var colorScale = makeColorScale(csvData);
         
         var counties = d3.selectAll(".counties")
             .style("fill", function(d){
                 return choropleth(d.properties, colorScale)
+            });
+        
+        var bars = d3.selectAll(".bars")
+            .sort(function(a,b){
+                return b[expressed] - a[expressed];
             })
-            .attr("fake", function(d){ console.log(yes)});
+            .attr("x", function(d, i){
+                return i * (chartInnerWidth / csvData.length) + leftPadding;
+            })
+            .attr("height", function(d, i){
+                return 463 - yScale(parseFloat(d[expressed]));   
+            })
+            .attr("y", function(d, i){
+                return yScale(parseFloat(d[expressed])) + topBottomPadding;
+            })
+            .style("fill", function(d){
+                return choropleth(d, colorScale);
+            })
+            .sort(function(a, b){
+                return b[expressed] - a[expressed];
+            });
+        
+        updateChart(bars, csvData.length, colorScale)
     }
     
-
-window.onload = setMap();
+    function updateChart(bars, n, colorScale){
+        bars.attr("x", function(d, i){
+            return i * (chartInnerWidth / n) + leftPadding;
+            })
+            .attr("height", function(d, i){
+                return 463 - yScale(parseFloat(d[expressed]));
+            })
+            .attr("y", function(d, i){
+                return yScale(parseFloat(d[expressed])) + topBottomPadding;
+            })
+            .style("fill", function(d, i){
+                return choropleth(d, colorScale);
+            });
+        
+        var chartTitle = d3.select(".chartTitle")
+            .text("Number of Variable " + expressed[3] + "in each county");
+    }
     
 })();
