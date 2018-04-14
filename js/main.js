@@ -16,7 +16,7 @@
     
     function setMap() {
     
-        var width = window.innerWidth * .65,
+        var width = window.innerWidth * .55,
             height = 500;
     
         var map = d3.select("body")
@@ -27,7 +27,7 @@
             
     
         var projection = d3.geoAlbers()
-            .center([-24, 47.3])
+            .center([-25, 47.25])
             .parallels([-47, 47.5])
             .scale(5500)
             .translate([width / 2, height / 2]);
