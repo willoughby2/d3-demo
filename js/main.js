@@ -80,17 +80,26 @@
     
     function setEnumerationUnits(washingtonCounties, map, path, colorScale){
         
-        var counties = map.selectAll(".counties")
+        var county = map.selectAll(".county")
             .data(washingtonCounties)
             .enter()
             .append("path")
             .attr("class", function(d){
-                return "counties" + d.properties.countyfp;
+                return "county " + d.properties.countyfp;
             })
             .attr("d", path)
             .style("fill", function(d){
                 return choropleth(d.properties, colorScale);
+            })
+            .on("mouseover", function(d){
+                highlight(d.properties);
+            })
+            .on("mouseout", function(d){
+                dehighlight(d.properties);
             });
+            
+        var desc = county.append("desc")
+            .text('{"stroke": "#000", "stroke-width": "0.5px"}');
 
     }
     
@@ -162,16 +171,11 @@
                 return "bars " + d.countyfp;
             })
             .attr("height", chartHeight/ csvData.length - 1)
-            .attr("y", function(d, i){
-                return i * (chartHeight / csvData.length) - topPadding;
-            })
-            .attr("width", function(d){
-                xScale(parseFloat(d[expressed]));
-            })
-            .attr("x", 0)
-            .style("fill", function(d){
-                return choropleth(d, colorScale);
-            });
+            .on("mouseover", highlight)
+            .on("mouseout", dehighlight);
+        
+        var desc = bars.append("desc")
+            .text('{"stroke": "none", "stroke-width": "0px"}');
             
         
         var chartTitle = chart.append("text")
@@ -213,7 +217,9 @@
         
         var colorScale = makeColorScale(csvData);
         
-        var counties = d3.selectAll(".counties")
+        var county = d3.selectAll(".county")
+            .transition()
+            .duration(1000)
             .style("fill", function(d){
                 return choropleth(d.properties, colorScale);
             });
@@ -221,6 +227,10 @@
         var bars = d3.selectAll(".bars")
             .sort(function(a, b){
                 return b[expressed] - a[expressed];
+            })
+            .transition()
+            .delay(function(d, i){
+                return i *20;
             })
             .style("fill", function(d){
                 return choropleth(d, colorScale);
@@ -243,6 +253,34 @@
         
         var chartTitle = d3.select(".chartTitle")
             .text("Percentage of " + expressed.slice(0, -7).toUpperCase() + " by County in " + expressed.slice(-4));
+    }
+    
+    function highlight(props){
+
+        var selected = d3.selectAll("." + props.countyfp)
+            .style("stroke", "blue")
+            .style("stroke-width", "2");
+    }
+    
+    function dehighlight(props){
+        var selected = d3.selectAll("." + props.countyfp)
+            .style("stroke", function(){
+                return getStyle(this, "stroke")
+            })
+            .style("stroke-width", function(){
+                return getStyle(this, "stroke-width")
+            });
+        
+        function getStyle(element, styleName){
+            var styleText = d3.select(element)
+                .select("desc")
+                .text();
+            
+            var styleObject = JSON.parse(styleText);
+            console.log(styleObject);
+            
+            return styleObject[styleName];
+        }
     }
     
 })();

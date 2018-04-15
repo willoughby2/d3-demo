@@ -21,13 +21,13 @@ header {
 }
 
 .chartTitle {
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
     font-size: .7em;
     font-weight: bold;
     text-align: center;
 }
 
-counties {
+county {
     stroke: black;
     stroke-width: 0.5px;
     stroke-linecap: round;
