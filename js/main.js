@@ -96,7 +96,8 @@
             })
             .on("mouseout", function(d){
                 dehighlight(d.properties);
-            });
+            })
+            .on("mousemove", moveLabel);
             
         var desc = county.append("desc")
             .text('{"stroke": "#000", "stroke-width": "0.5px"}');
@@ -172,7 +173,8 @@
             })
             .attr("height", chartHeight/ csvData.length - 1)
             .on("mouseover", highlight)
-            .on("mouseout", dehighlight);
+            .on("mouseout", dehighlight)
+            .on("mousemove", moveLabel);
         
         var desc = bars.append("desc")
             .text('{"stroke": "none", "stroke-width": "0px"}');
@@ -260,6 +262,8 @@
         var selected = d3.selectAll("." + props.countyfp)
             .style("stroke", "blue")
             .style("stroke-width", "2");
+        
+        setLabel(props);
     }
     
     function dehighlight(props){
@@ -277,10 +281,49 @@
                 .text();
             
             var styleObject = JSON.parse(styleText);
-            console.log(styleObject);
             
             return styleObject[styleName];
+            
         }
+        
+        d3.select(".infolabel")
+            .remove();
+    }
+    
+    function setLabel(props){
+        var labelAttribute = "<h1>" + props[expressed] +
+            "</h1><b>" + expressed + "</b>";
+        
+        var infolabel = d3.select("body")
+            .append("div")
+            .attr("class", "infolabel")
+            .attr("id", props.countyfp + "_label")
+            .html(labelAttribute);
+        
+        var countyName = infolabel.append("div")
+            .attr("class", "labelname")
+            .html(props.name);
+    }
+    
+    function moveLabel(){
+        
+        var labelWidth = d3.select(".infolabel")
+            .node()
+            .getBoundingClientRect()
+            .width;
+        
+        var x1 = d3.event.clientX + 10,
+            y1 = d3.event.clientY - 75,
+            x2 = d3.event.clientX - labelWidth - 10,
+            y2 = d3.event.clientY + 25;
+        
+        var x = d3.event.clientX > window.innerWidth - labelWidth - 20 ? x2 : x1;
+        
+        var y = d3.event.clientY < 75 ? y2 : y1;
+        
+        d3.select(".infolabel")
+            .style("left", x + "px")
+            .style("top", y + "px");
     }
     
 })();
